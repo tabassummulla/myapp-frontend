@@ -1,9 +1,10 @@
 import React from "react";
+import SearchBar from "../components/Search";
 
 const HomePage = () => {
   return (
     <div>
-      <h1>Welcome to the homepage</h1>
+      <SearchBar />
     </div>
   );
 };
