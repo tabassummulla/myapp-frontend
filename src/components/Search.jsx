@@ -53,7 +53,7 @@ const SearchBar = () => {
           label="Search field"
           type="search"
           variant="outlined"
-          placeholder="Search by keyword"
+          placeholder="Search The Holy Quran By keyword"
           onChange={e => setSearchKeyword(e.target.value)}
         />
         <Divider className={classes.divider} orientation="vertical" />

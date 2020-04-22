@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
@@ -6,8 +6,9 @@ import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Chip from "@material-ui/core/Chip";
-import Badge from "@material-ui/core/Badge";
-
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
 const useStyles = makeStyles(theme => ({
   root: {
     width: 1000,
@@ -25,39 +26,44 @@ const useStyles = makeStyles(theme => ({
   },
   total: {
     marginTop: 30,
-    marginLeft: 400,
+    marginLeft: 350,
     display: "flex",
     alignItems: "center"
   },
-
-  desc: {
-    fontStyle: "italic",
-    fontFamily: "Monospace"
-  }
+  expanded: {
+    backgroundColor: "#ffe8f0"
+  },
+  verse: {}
 }));
 
 const SearchResults = ({ results }) => {
   const classes = useStyles();
 
+  //grouping results from same surah
+  const groupResults = () => {
+    let obj = results.reduce((r, a) => {
+      r[a.surah.englishName] = r[a.surah.englishName] || [];
+      r[a.surah.englishName].push(a);
+      return r;
+    }, Object.create(null));
+
+    return Object.entries(obj);
+  };
+
   return (
     <div>
       {results.length > 0 ? (
         <div className={classes.total}>
-          <Typography>Total Results</Typography>
-          <Badge
-            color="secondary"
-            className={classes.totalNo}
-            badgeContent={results.length}
-          />
+          <Chip color="secondary" label={groupResults().length + " Results"} />
         </div>
       ) : (
         ""
       )}
-      {results.map((res, index) => (
+      {groupResults().map((res, index) => (
         <div className={classes.root} key={index}>
           <CustomExpansionPanel
-            surahName={res.surah.englishName}
-            text={res.text}
+            surahName={res[0]}
+            text={res[1]}
             styleClass={classes}
           />
         </div>
@@ -82,8 +88,14 @@ export const CustomExpansionPanel = ({ surahName, text, styleClass }) => {
         />
       </ExpansionPanelSummary>
 
-      <ExpansionPanelDetails>
-        <Typography className={styleClass.desc}>{text}</Typography>
+      <ExpansionPanelDetails className={styleClass.expanded}>
+        <List aria-label="verses">
+          {text.map((verse, index) => (
+            <ListItem key={index}>
+              <ListItemText className={styleClass.verse} primary={verse.text} />
+            </ListItem>
+          ))}
+        </List>
       </ExpansionPanelDetails>
     </ExpansionPanel>
   );
